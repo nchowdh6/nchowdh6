@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runoff Schedule & Resource Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .status-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .status-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .gradient-header {
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+        }
+        .stat-ring {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
+        <!-- Header -->
+        <div class="gradient-header text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h1 class="text-4xl md:text-5xl font-bold">Runoff Schedule Dashboard</h1>
+                        <p class="mt-3 text-blue-100 text-lg">Track program milestones, identify planning gaps & detect resource conflicts</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm text-blue-200">Current Date</div>
+                        <div class="text-2xl font-bold">Nov 25, 2025</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <!-- Stats Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+                <div id="stat-green" class="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-medium">On Track</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-2">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-2xl">✓</div>
+                    </div>
+                </div>
+                <div id="stat-orange" class="bg-white rounded-xl shadow-md p-6 border-l-4 border-amber-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-medium">Planning Gap</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-2">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center text-2xl">!</div>
+                    </div>
+                </div>
+                <div id="stat-red" class="bg-white rounded-xl shadow-md p-6 border-l-4 border-red-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-medium">Critical Gap</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-2">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center text-2xl">⚠</div>
+                    </div>
+                </div>
+                <div id="stat-conflict" class="bg-white rounded-xl shadow-md p-6 border-l-4 border-yellow-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-medium">Conflicts</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-2">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center text-2xl">⚡</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schedule Cards Grid -->
+            <div class="mb-12">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Program Runoff Schedule</h2>
+                <div id="scheduleGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Resource Utilization Section -->
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-8">Resource Utilization</h2>
+                <div id="resourceUtilization" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Embedded dummy data
+        const initialRunoffData = [
+            // R - Red Flag (Milestone passed, no resource/date)
+            { id: 1, program: "Alpha-101", op_num: "OP-001", type: "Manual", vendor: "FANUC", location: "Detroit, US", resource: "", runoff_start: "", runoff_end: "", milestone_qtr_start: "2025-10-01" },
+
+            // O - Orange Flag (Within 90-day window, no resource/date)
+            { id: 2, program: "Beta-202", op_num: "OP-005", type: "Semi-Auto", vendor: "ABB", location: "Munich, DE", resource: "", runoff_start: "", runoff_end: "", milestone_qtr_start: "2025-11-01" },
+
+            // G - Green (Complete and on track)
+            { id: 3, program: "Gamma-303", op_num: "OP-012", type: "Auto", vendor: "FUCA", location: "Shanghai, CN", resource: "Devansh", runoff_start: "2026-03-10", runoff_end: "2026-03-15", milestone_qtr_start: "2025-12-01" },
+
+            // C - Conflict (Overlapping schedule with ID 5)
+            { id: 4, program: "Delta-404", op_num: "OP-020", type: "Auto", vendor: "Ari Robotics", location: "Berlin, DE", resource: "Devansh", runoff_start: "2026-04-01", runoff_end: "2026-04-05", milestone_qtr_start: "2026-01-01" },
+
+            // C - Conflict (Overlapping schedule with ID 4)
+            { id: 5, program: "Delta-404", op_num: "OP-021", type: "Manual", vendor: "Ari Robotics", location: "Berlin, DE", resource: "Devansh", runoff_start: "2026-04-04", runoff_end: "2026-04-06", milestone_qtr_start: "2026-01-01" },
+
+            // G - Green (Populated, no conflict)
+            { id: 6, program: "Epsilon-505", op_num: "OP-033", type: "Semi-Auto", vendor: "FANUC", location: "Tokyo, JP", resource: "Adrian", runoff_start: "2026-05-20", runoff_end: "2026-05-25", milestone_qtr_start: "2026-02-01" },
+        ];
+
+        // Fixed current date
+        const CURRENT_DATE = new Date('2025-11-25');
+
+        /**
+         * Calculate days between two dates (inclusive of start date, exclusive of end date)
+         */
+        function calculateDaysBetween(startStr, endStr) {
+            const start = new Date(startStr);
+            const end = new Date(endStr);
+            return Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+        }
+
+        /**
+         * Check if two date ranges overlap
+         */
+        function doDateRangesOverlap(start1Str, end1Str, start2Str, end2Str) {
+            const start1 = new Date(start1Str);
+            const end1 = new Date(end1Str);
+            const start2 = new Date(start2Str);
+            const end2 = new Date(end2Str);
+
+            return start1 <= end2 && start2 <= end1;
+        }
+
+        /**
+         * Detect resource conflicts - returns set of operation IDs with conflicts
+         */
+        function detectResourceConflicts(data) {
+            const conflictIds = new Set();
+            const resourceOps = {};
+
+            // Group operations by resource (only those with valid dates)
+            data.forEach(op => {
+                if (op.resource && op.runoff_start && op.runoff_end) {
+                    if (!resourceOps[op.resource]) {
+                        resourceOps[op.resource] = [];
+                    }
+                    resourceOps[op.resource].push(op);
+                }
+            });
+
+            // Check for overlaps within each resource
+            Object.keys(resourceOps).forEach(resource => {
+                const ops = resourceOps[resource];
+                for (let i = 0; i < ops.length; i++) {
+                    for (let j = i + 1; j < ops.length; j++) {
+                        if (doDateRangesOverlap(ops[i].runoff_start, ops[i].runoff_end, ops[j].runoff_start, ops[j].runoff_end)) {
+                            conflictIds.add(ops[i].id);
+                            conflictIds.add(ops[j].id);
+                        }
+                    }
+                }
+            });
+
+            return conflictIds;
+        }
+
+        /**
+         * Determine the status and color for an operation
+         */
+        function getStatusInfo(op, conflictIds) {
+            const hasIncompleteData = !op.resource || !op.runoff_start || !op.runoff_end;
+
+            // Check if there's a conflict (overrides Green but not Red/Orange)
+            if (conflictIds.has(op.id) && !hasIncompleteData) {
+                return {
+                    status: 'conflict',
+                    color: 'bg-yellow-500',
+                    label: 'Conflict',
+                    borderColor: 'border-yellow-200'
+                };
+            }
+
+            if (!hasIncompleteData) {
+                return {
+                    status: 'green',
+                    color: 'bg-green-500',
+                    label: 'On Track',
+                    borderColor: 'border-green-200'
+                };
+            }
+
+            const milestoneDate = new Date(op.milestone_qtr_start);
+            const daysSinceMilestone = Math.floor((CURRENT_DATE - milestoneDate) / (1000 * 60 * 60 * 24));
+
+            if (daysSinceMilestone > 90) {
+                return {
+                    status: 'red',
+                    color: 'bg-red-500',
+                    label: 'Critical Gap',
+                    borderColor: 'border-red-200'
+                };
+            } else if (CURRENT_DATE > milestoneDate) {
+                return {
+                    status: 'orange',
+                    color: 'bg-amber-500',
+                    label: 'Planning Gap',
+                    borderColor: 'border-amber-200'
+                };
+            } else {
+                return {
+                    status: 'blue',
+                    color: 'bg-blue-500',
+                    label: 'Upcoming',
+                    borderColor: 'border-blue-200'
+                };
+            }
+        }
+
+        /**
+         * Format date for display
+         */
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        /**
+         * Render the schedule as modern cards
+         */
+        function renderScheduleTable() {
+            const conflictIds = detectResourceConflicts(initialRunoffData);
+            const grid = document.getElementById('scheduleGrid');
+            grid.innerHTML = '';
+
+            let statCounts = { green: 0, orange: 0, red: 0, conflict: 0 };
+
+            initialRunoffData.forEach(op => {
+                const statusInfo = getStatusInfo(op, conflictIds);
+                
+                // Count stats
+                if (statusInfo.status === 'green') statCounts.green++;
+                else if (statusInfo.status === 'orange') statCounts.orange++;
+                else if (statusInfo.status === 'red') statCounts.red++;
+                else if (statusInfo.status === 'conflict') statCounts.conflict++;
+
+                const card = document.createElement('div');
+                const statusBg = {
+                    'green': 'border-green-200 bg-gradient-to-br from-green-50 to-white',
+                    'orange': 'border-amber-200 bg-gradient-to-br from-amber-50 to-white',
+                    'red': 'border-red-200 bg-gradient-to-br from-red-50 to-white',
+                    'conflict': 'border-yellow-200 bg-gradient-to-br from-yellow-50 to-white',
+                    'blue': 'border-blue-200 bg-gradient-to-br from-blue-50 to-white'
+                };
+
+                const statusBgClass = statusBg[statusInfo.status] || statusBg['blue'];
+
+                card.className = `status-card border-2 rounded-xl p-6 ${statusBgClass}`;
+
+                const statusDot = {
+                    'green': 'bg-green-500',
+                    'orange': 'bg-amber-500',
+                    'red': 'bg-red-500',
+                    'conflict': 'bg-yellow-500',
+                    'blue': 'bg-blue-500'
+                };
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-3 h-3 rounded-full ${statusDot[statusInfo.status]}"></div>
+                            <span class="text-xs font-semibold text-gray-600 uppercase tracking-wide">${statusInfo.label}</span>
+                        </div>
+                        <span class="text-xs font-semibold text-gray-500">ID #${op.id}</span>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-gray-900 mb-1">${op.program}</h3>
+                    <p class="text-sm text-gray-600 mb-4">${op.op_num} • ${op.type}</p>
+
+                    <div class="space-y-3 mb-4 pb-4 border-b border-gray-200">
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs font-medium text-gray-600">VENDOR</span>
+                            <span class="text-sm font-semibold text-gray-900 text-right">${op.vendor}</span>
+                        </div>
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs font-medium text-gray-600">LOCATION</span>
+                            <span class="text-sm font-semibold text-gray-900 text-right">${op.location}</span>
+                        </div>
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs font-medium text-gray-600">MILESTONE</span>
+                            <span class="text-sm font-semibold text-gray-900 text-right">${formatDate(op.milestone_qtr_start)}</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 mb-4 pb-4 border-b border-gray-200">
+                        <div>
+                            <span class="text-xs font-medium text-gray-600">RUNOFF PERIOD</span>
+                            <p class="text-sm font-semibold text-gray-900 mt-1">
+                                ${op.runoff_start ? `${formatDate(op.runoff_start)} → ${formatDate(op.runoff_end)}` : '<span class="text-red-600">Not Scheduled</span>'}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-medium text-gray-600">ASSIGNED TO</span>
+                        <span class="px-3 py-1 rounded-full text-sm font-semibold ${op.resource ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}">
+                            ${op.resource || 'Unassigned'}
+                        </span>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+
+            // Update stats
+            document.getElementById('stat-green').querySelector('p:nth-of-type(2)').textContent = statCounts.green;
+            document.getElementById('stat-orange').querySelector('p:nth-of-type(2)').textContent = statCounts.orange;
+            document.getElementById('stat-red').querySelector('p:nth-of-type(2)').textContent = statCounts.red;
+            document.getElementById('stat-conflict').querySelector('p:nth-of-type(2)').textContent = statCounts.conflict;
+        }
+
+        /**
+         * Render resource utilization cards
+         */
+        function renderResourceUtilization() {
+            const conflictIds = detectResourceConflicts(initialRunoffData);
+            const resourceMap = {};
+
+            // Calculate total days and check for conflicts per resource
+            initialRunoffData.forEach(op => {
+                if (op.resource && op.runoff_start && op.runoff_end) {
+                    if (!resourceMap[op.resource]) {
+                        resourceMap[op.resource] = {
+                            totalDays: 0,
+                            hasConflict: false,
+                            assignedOps: 0
+                        };
+                    }
+                    resourceMap[op.resource].totalDays += calculateDaysBetween(op.runoff_start, op.runoff_end);
+                    resourceMap[op.resource].assignedOps += 1;
+                    if (conflictIds.has(op.id)) {
+                        resourceMap[op.resource].hasConflict = true;
+                    }
+                }
+            });
+
+            const container = document.getElementById('resourceUtilization');
+            container.innerHTML = '';
+
+            if (Object.keys(resourceMap).length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center col-span-full py-8">No resources assigned</p>';
+                return;
+            }
+
+            Object.entries(resourceMap).forEach(([resource, data]) => {
+                const card = document.createElement('div');
+                card.className = `rounded-xl p-6 border-2 ${data.hasConflict ? 'bg-gradient-to-br from-red-50 to-white border-red-300' : 'bg-gradient-to-br from-slate-50 to-white border-slate-200'}`;
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <p class="${data.hasConflict ? 'font-bold text-red-600' : 'font-semibold text-gray-900'} text-lg">${resource}</p>
+                            ${data.hasConflict ? '<p class="text-xs font-semibold text-red-600 mt-1">⚠️ SCHEDULING CONFLICT</p>' : ''}
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-gray-200">
+                            <span class="text-xs font-medium text-gray-600">Days Committed</span>
+                            <span class="text-2xl font-bold text-blue-600">${data.totalDays}</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-gray-200">
+                            <span class="text-xs font-medium text-gray-600">Assigned Operations</span>
+                            <span class="text-lg font-bold text-gray-900">${data.assignedOps}</span>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        /**
+         * Initialize the application
+         */
+        function init() {
+            renderScheduleTable();
+            renderResourceUtilization();
+        }
+
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
