@@ -1,47 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Runoff Schedule & Resource Dashboard</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Runoff Schedule Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-        }
-        .status-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .status-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            background: #f7fafc;
+            min-height: 100vh;
+            color: #111827;
         }
         .gradient-header {
-            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
         }
-        .stat-ring {
-            animation: pulse 2s infinite;
+        .glass-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
         }
+        .glass-card:hover {
+            background: #ffffff;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+            transform: translateY(-1px);
+        }
+        .status-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
+            padding: 16px;
+        }
+        .status-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+        }
+        .btn-primary {
+            background: #2563eb;
+            color: #ffffff;
+            border: 1px solid #1d4ed8;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+        }
+        .btn-primary:hover {
+            background: #1d4ed8;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+        input, textarea, select {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+            color: #111827;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            background: #ffffff;
+            border-color: #93c5fd;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+        .keyboard-hint { font-size: 0.75rem; color: #6b7280; }
+        
+        /* Smooth transitions for modern UX */
+        * {
+            transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+        }
+        
+        /* Enhanced focus indicators for accessibility */
+        button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+        
+        /* Loading skeleton animation */
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
+        .skeleton {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            background: #e5e7eb;
+        }
+        
+        /* Auto-save indicator */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .save-indicator {
+            animation: fadeIn 0.3s ease;
+        }
     </style>
 </head>
-<body class="bg-gray-50">
-    <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
+<body>
+    <div class="min-h-screen bg-gray-50">
         <!-- Header -->
-        <div class="gradient-header text-white">
+        <div class="gradient-header">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div class="flex items-start justify-between">
-                    <div>
-                        <h1 class="text-4xl md:text-5xl font-bold">Runoff Schedule Dashboard</h1>
-                        <p class="mt-3 text-blue-100 text-lg">Track program milestones, identify planning gaps & detect resource conflicts</p>
+                <div class="flex flex-col md:flex-row items-start justify-between gap-6">
+                    <div class="flex-1">
+                        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900">Runoff Schedule Dashboard</h1>
+                        <p class="mt-2 text-gray-600 text-sm sm:text-base">Track program milestones, identify planning gaps & detect resource conflicts</p>
+                        <p class="mt-2 text-xs keyboard-hint">Keyboard: <kbd class="bg-gray-100 px-2 py-1 rounded border">Ctrl+N</kbd> new • <kbd class="bg-gray-100 px-2 py-1 rounded border">Ctrl+F</kbd> search • <kbd class="bg-gray-100 px-2 py-1 rounded border">Ctrl+E</kbd> export • <kbd class="bg-gray-100 px-2 py-1 rounded border">Esc</kbd> close</p>
                     </div>
-                    <div class="text-right">
-                        <div class="text-sm text-blue-200">Current Date</div>
-                        <div class="text-2xl font-bold">Nov 25, 2025</div>
+                    <div class="text-center sm:text-right space-y-1 glass-card px-4 sm:px-5 py-3 w-full sm:w-auto">
+                        <div class="text-xs sm:text-sm text-gray-500">Current Date</div>
+                        <div class="text-xl sm:text-2xl font-semibold text-gray-900">Nov 25, 2025</div>
+                        <div class="text-xs text-gray-600">
+                            <span id="data-count-badge" class="bg-blue-600 text-white px-2 sm:px-3 py-0.5 rounded-full font-medium text-xs">0 tasks loaded</span>
+                        </div>
+                        <div id="last-saved" class="text-xs text-gray-500 save-indicator"></div>
+                        <div id="save-status" class="text-xs text-green-600 font-medium hidden save-indicator">✓ Saved</div>
                     </div>
                 </div>
             </div>
@@ -49,91 +130,251 @@
 
         <!-- Main Content -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            
+            <!-- Data Import Section -->
+            <div class="glass-card p-4 sm:p-6 mb-8">
+                <div class="flex flex-col gap-4">
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold text-gray-900">Import Data</h3>
+                        <p class="text-xs sm:text-sm text-gray-600 mt-1">Load CSV (ProgramName, EquipmentType, TaskName, Location, RunoffStart, RunoffEnd, ResourceName, MilestoneDate)</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-wrap">
+                        <input type="file" id="csvFileInput" accept=".csv" class="px-2 sm:px-4 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm text-gray-900">
+                        <button id="btn-import-csv" class="btn-primary text-xs sm:text-sm px-2 sm:px-4 py-2 whitespace-nowrap">Import CSV</button>
+                        <button id="btn-export-csv" class="btn-primary text-xs sm:text-sm px-2 sm:px-4 py-2 whitespace-nowrap">Export CSV</button>
+                        <button id="btn-load-sample" class="btn-primary text-xs sm:text-sm px-2 sm:px-4 py-2 whitespace-nowrap">Load Sample</button>
+                        <button id="btn-clear-data" class="btn-primary text-xs sm:text-sm px-2 sm:px-4 py-2 whitespace-nowrap">Clear All</button>
+                    </div>
+                    <div id="import-feedback" class="mt-2 text-sm hidden"></div>
+                </div>
+            </div>
+
             <!-- Stats Overview -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                <div id="stat-green" class="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-600 text-sm font-medium">On Track</p>
-                            <p class="text-3xl font-bold text-gray-900 mt-2">0</p>
-                        </div>
-                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-2xl">✓</div>
+            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6 mb-10">
+                <div class="status-card border-l-4 border-green-500">
+                    <div class="flex flex-col items-center justify-center text-center">
+                        <p class="text-xs sm:text-sm font-medium text-gray-600">On Track</p>
+                        <p id="stat-value-green" class="text-2xl sm:text-4xl font-extrabold text-gray-900 mt-1">0</p>
                     </div>
                 </div>
-                <div id="stat-orange" class="bg-white rounded-xl shadow-md p-6 border-l-4 border-amber-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-600 text-sm font-medium">Planning Gap</p>
-                            <p class="text-3xl font-bold text-gray-900 mt-2">0</p>
-                        </div>
-                        <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center text-2xl">!</div>
+                <div class="status-card border-l-4 border-amber-500">
+                    <div class="flex flex-col items-center justify-center text-center">
+                        <p class="text-xs sm:text-sm font-medium text-gray-600">Planning Gap (30-90d)</p>
+                        <p id="stat-value-orange" class="text-2xl sm:text-4xl font-extrabold text-gray-900 mt-1">0</p>
                     </div>
                 </div>
-                <div id="stat-red" class="bg-white rounded-xl shadow-md p-6 border-l-4 border-red-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-600 text-sm font-medium">Critical Gap</p>
-                            <p class="text-3xl font-bold text-gray-900 mt-2">0</p>
-                        </div>
-                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center text-2xl">⚠</div>
+                <div class="status-card border-l-4 border-red-500">
+                    <div class="flex flex-col items-center justify-center text-center">
+                        <p class="text-xs sm:text-sm font-medium text-gray-600">Critical Gap (0-30d)</p>
+                        <p id="stat-value-red" class="text-2xl sm:text-4xl font-extrabold text-gray-900 mt-1">0</p>
                     </div>
                 </div>
-                <div id="stat-conflict" class="bg-white rounded-xl shadow-md p-6 border-l-4 border-yellow-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-600 text-sm font-medium">Conflicts</p>
-                            <p class="text-3xl font-bold text-gray-900 mt-2">0</p>
-                        </div>
-                        <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center text-2xl">⚡</div>
+                <div class="status-card border-l-4 border-yellow-500">
+                    <div class="flex flex-col items-center justify-center text-center">
+                        <p class="text-xs sm:text-sm font-medium text-gray-600">Conflicts</p>
+                        <p id="stat-value-conflict" class="text-2xl sm:text-4xl font-extrabold text-gray-900 mt-1">0</p>
                     </div>
                 </div>
             </div>
 
             <!-- Schedule Cards Grid -->
             <div class="mb-12">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">Program Runoff Schedule</h2>
-                <div id="scheduleGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="flex flex-col gap-4 mb-6">
+                    <div>
+                        <input type="text" id="search-filter" placeholder="Search programs, tasks, locations..." aria-label="Search operations" class="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        <div class="mt-2 flex flex-col sm:flex-row gap-2 items-start sm:items-center flex-wrap">
+                            <input id="bulk-reassign-input-main" type="text" placeholder="Resource name..." aria-label="Bulk reassign resource name" class="px-2 sm:px-3 py-2 border border-gray-300 rounded flex-1 sm:flex-initial sm:w-40 bg-white text-gray-900 placeholder:text-gray-400 text-xs sm:text-sm" />
+                            <button id="bulk-reassign-apply-main" aria-label="Apply bulk assignment" class="btn-primary text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Assign</button>
+                            <button id="bulk-select-clear-main" aria-label="Clear bulk selection" class="btn-primary text-xs sm:text-sm px-2 sm:px-3 py-2 whitespace-nowrap">Clear</button>
+                            <label class="text-xs text-gray-600 flex items-center">All: <input id="bulk-select-all-main" type="checkbox" aria-label="Select all operations" class="ml-1 align-middle"/></label>
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 items-start sm:items-center">
+                        <h2 class="text-xl sm:text-2xl font-semibold text-gray-900">Program Runoff Schedule</h2>
+                        <button id="btn-add-operation" aria-label="Add new operation" class="btn-primary text-xs sm:text-sm px-3 py-2 whitespace-nowrap" style="padding: 8px 12px;">+ Add</button>
+                    </div>
+                </div>
+                <div id="scheduleGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                     <!-- Populated by JavaScript -->
                 </div>
             </div>
 
             <!-- Resource Utilization Section -->
-            <div class="bg-white rounded-2xl shadow-lg p-8">
-                <h2 class="text-2xl font-bold text-gray-900 mb-8">Resource Utilization</h2>
-                <div id="resourceUtilization" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="glass-card p-4 sm:p-6 md:p-8 mt-8 md:mt-12">
+                <h2 class="text-xl sm:text-2xl font-semibold text-gray-900 mb-6 md:mb-8">Resource Utilization</h2>
+                <div id="resourceUtilization" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                     <!-- Populated by JavaScript -->
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Modal for Adding/Editing Operations -->
+    <div id="operationModal" class="hidden fixed inset-0 bg-gray-900/30 flex items-center justify-center z-50 p-4">
+        <div class="glass-card max-w-2xl w-full max-h-[85vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white text-gray-900 p-4 sm:p-6 border-b border-gray-200">
+                <h2 id="modalTitle" class="text-xl sm:text-2xl font-bold">Add New Program</h2>
+            </div>
+            <form id="operationForm" class="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Program Name *</label>
+                        <input id="form-ProgramName" type="text" placeholder="e.g., Alpha-101" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Task Name (Op) *</label>
+                        <input id="form-TaskName" type="text" placeholder="e.g., Op1010" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Equipment Type *</label>
+                        <select id="form-EquipmentType" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <option value="">Select Type</option>
+                            <option value="Manual">Manual</option>
+                            <option value="Semi-Auto">Semi-Auto</option>
+                            <option value="Auto">Auto</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Location (Vendor/Plant) *</label>
+                        <input id="form-Location" type="text" placeholder="e.g., Fanuc-USA, FANUC-Germany" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Milestone Date *</label>
+                        <input id="form-MilestoneDate" type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Resource Name</label>
+                        <input id="form-ResourceName" type="text" placeholder="e.g., Devansh, Adrian" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Runoff Start Date</label>
+                        <input id="form-RunoffStart" type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Runoff End Date</label>
+                        <input id="form-RunoffEnd" type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <div class="flex gap-3 pt-4 border-t border-gray-200">
+                    <button type="submit" class="flex-1 btn-primary">Save</button>
+                    <button type="button" id="btn-close-modal" class="flex-1 btn-primary">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Resource Roadmap -->
+    <div id="resourceModal" class="hidden fixed inset-0 bg-gray-900/30 flex items-center justify-center z-50 p-4">
+        <div class="glass-card max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white text-gray-900 p-4 sm:p-6 border-b border-gray-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <h2 id="resourceModalTitle" class="text-xl sm:text-2xl font-bold">Resource Roadmap</h2>
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+                    <button id="resourceExportBtn" class="btn-primary text-xs sm:text-sm px-2 sm:px-3 py-1 whitespace-nowrap" style="padding: 6px 12px;">Export</button>
+                    <button id="resourcePrintBtn" class="btn-primary text-xs sm:text-sm px-2 sm:px-3 py-1 whitespace-nowrap" style="padding: 6px 12px;">Print</button>
+                    <button id="resourceModalClose" class="btn-primary text-xs sm:text-sm px-2 sm:px-3 py-1 whitespace-nowrap" style="padding: 6px 12px;">Close</button>
+                </div>
+            </div>
+            <div id="resourceModalBody" class="p-4 sm:p-6 space-y-4">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Embedded dummy data
-        const initialRunoffData = [
-            // R - Red Flag (Milestone passed, no resource/date)
-            { id: 1, program: "Alpha-101", op_num: "OP-001", type: "Manual", vendor: "FANUC", location: "Detroit, US", resource: "", runoff_start: "", runoff_end: "", milestone_qtr_start: "2025-10-01" },
-
-            // O - Orange Flag (Within 90-day window, no resource/date)
-            { id: 2, program: "Beta-202", op_num: "OP-005", type: "Semi-Auto", vendor: "ABB", location: "Munich, DE", resource: "", runoff_start: "", runoff_end: "", milestone_qtr_start: "2025-11-01" },
-
-            // G - Green (Complete and on track)
-            { id: 3, program: "Gamma-303", op_num: "OP-012", type: "Auto", vendor: "FUCA", location: "Shanghai, CN", resource: "Devansh", runoff_start: "2026-03-10", runoff_end: "2026-03-15", milestone_qtr_start: "2025-12-01" },
-
-            // C - Conflict (Overlapping schedule with ID 5)
-            { id: 4, program: "Delta-404", op_num: "OP-020", type: "Auto", vendor: "Ari Robotics", location: "Berlin, DE", resource: "Devansh", runoff_start: "2026-04-01", runoff_end: "2026-04-05", milestone_qtr_start: "2026-01-01" },
-
-            // C - Conflict (Overlapping schedule with ID 4)
-            { id: 5, program: "Delta-404", op_num: "OP-021", type: "Manual", vendor: "Ari Robotics", location: "Berlin, DE", resource: "Devansh", runoff_start: "2026-04-04", runoff_end: "2026-04-06", milestone_qtr_start: "2026-01-01" },
-
-            // G - Green (Populated, no conflict)
-            { id: 6, program: "Epsilon-505", op_num: "OP-033", type: "Semi-Auto", vendor: "FANUC", location: "Tokyo, JP", resource: "Adrian", runoff_start: "2026-05-20", runoff_end: "2026-05-25", milestone_qtr_start: "2026-02-01" },
-        ];
+        // Data storage - using correct field names
+        let runoffData = [];
+        let nextId = 1;
 
         // Fixed current date
         const CURRENT_DATE = new Date('2025-11-25');
 
         /**
-         * Calculate days between two dates (inclusive of start date, exclusive of end date)
+         * Show save indicator with auto-hide (Pillar 4: Immediate feedback)
+         */
+        function showSaveIndicator() {
+            const indicator = document.getElementById('save-status');
+            if (indicator) {
+                indicator.classList.remove('hidden');
+                setTimeout(() => {
+                    indicator.classList.add('hidden');
+                }, 2000);
+            }
+        }
+
+        /**
+         * Show feedback message with auto-dismiss (Pillar 4: Immediate Action)
+         */
+        function showFeedback(message, type = 'success') {
+            const feedback = document.getElementById('import-feedback');
+            if (!feedback) return;
+            
+            const colorClass = type === 'success' ? 'text-green-600' : type === 'error' ? 'text-red-600' : 'text-blue-600';
+            feedback.className = `mt-2 text-sm ${colorClass} font-medium`;
+            feedback.textContent = message;
+            feedback.classList.remove('hidden');
+            
+            setTimeout(() => {
+                feedback.classList.add('hidden');
+            }, 3000);
+        }
+
+        /**
+         * Save data to localStorage
+         */
+        function saveDataToStorage() {
+            localStorage.setItem('runoffDashboardData', JSON.stringify({
+                data: runoffData,
+                nextId: nextId
+            }));
+            updateHeaderBadges();
+        }
+
+        /**
+         * Load data from localStorage
+         */
+        function loadDataFromStorage() {
+            try {
+                const stored = localStorage.getItem('runoffDashboardData');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    runoffData = parsed.data || [];
+                    nextId = parsed.nextId || (runoffData.length > 0 ? Math.max(...runoffData.map(d => d.id)) + 1 : 1);
+                    return true;
+                }
+            } catch (err) {
+                console.error('Error loading from storage:', err);
+            }
+            return false;
+        }
+
+        /**
+         * Update header badges with data count and last saved timestamp
+         */
+        function updateHeaderBadges() {
+            const badge = document.getElementById('data-count-badge');
+            const savedDiv = document.getElementById('last-saved');
+            if (badge) {
+                badge.textContent = `${runoffData.length} task${runoffData.length !== 1 ? 's' : ''} loaded`;
+            }
+            if (savedDiv) {
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                savedDiv.textContent = `Last saved: ${timeStr}`;
+            }
+        }
+
+        /**
+         * Calculate days between two dates (inclusive of start date)
          */
         function calculateDaysBetween(startStr, endStr) {
             const start = new Date(startStr);
@@ -149,33 +390,30 @@
             const end1 = new Date(end1Str);
             const start2 = new Date(start2Str);
             const end2 = new Date(end2Str);
-
             return start1 <= end2 && start2 <= end1;
         }
 
         /**
-         * Detect resource conflicts - returns set of operation IDs with conflicts
+         * Detect resource conflicts
          */
         function detectResourceConflicts(data) {
             const conflictIds = new Set();
             const resourceOps = {};
 
-            // Group operations by resource (only those with valid dates)
             data.forEach(op => {
-                if (op.resource && op.runoff_start && op.runoff_end) {
-                    if (!resourceOps[op.resource]) {
-                        resourceOps[op.resource] = [];
+                if (op.ResourceName && op.RunoffStart && op.RunoffEnd) {
+                    if (!resourceOps[op.ResourceName]) {
+                        resourceOps[op.ResourceName] = [];
                     }
-                    resourceOps[op.resource].push(op);
+                    resourceOps[op.ResourceName].push(op);
                 }
             });
 
-            // Check for overlaps within each resource
             Object.keys(resourceOps).forEach(resource => {
                 const ops = resourceOps[resource];
                 for (let i = 0; i < ops.length; i++) {
                     for (let j = i + 1; j < ops.length; j++) {
-                        if (doDateRangesOverlap(ops[i].runoff_start, ops[i].runoff_end, ops[j].runoff_start, ops[j].runoff_end)) {
+                        if (doDateRangesOverlap(ops[i].RunoffStart, ops[i].RunoffEnd, ops[j].RunoffStart, ops[j].RunoffEnd)) {
                             conflictIds.add(ops[i].id);
                             conflictIds.add(ops[j].id);
                         }
@@ -187,17 +425,21 @@
         }
 
         /**
-         * Determine the status and color for an operation
+         * Determine status based on milestone date and field completion
+         * Red: 0-30 days to milestone, gaps exist
+         * Orange: 30-90 days to milestone, gaps exist
+         * Green: All fields filled, no conflicts
+         * Conflict: All fields filled but overlapping with other resource schedule
          */
         function getStatusInfo(op, conflictIds) {
-            const hasIncompleteData = !op.resource || !op.runoff_start || !op.runoff_end;
+            const hasIncompleteData = !op.ResourceName || !op.RunoffStart || !op.RunoffEnd;
 
-            // Check if there's a conflict (overrides Green but not Red/Orange)
+            // Check if there's a conflict (overrides green but not red/orange)
             if (conflictIds.has(op.id) && !hasIncompleteData) {
                 return {
                     status: 'conflict',
                     color: 'bg-yellow-500',
-                    label: 'Conflict',
+                    label: 'Resource Conflict',
                     borderColor: 'border-yellow-200'
                 };
             }
@@ -211,28 +453,33 @@
                 };
             }
 
-            const milestoneDate = new Date(op.milestone_qtr_start);
-            const daysSinceMilestone = Math.floor((CURRENT_DATE - milestoneDate) / (1000 * 60 * 60 * 24));
+            const milestoneDate = new Date(op.MilestoneDate);
+            const daysToMilestone = Math.floor((milestoneDate - CURRENT_DATE) / (1000 * 60 * 60 * 24));
 
-            if (daysSinceMilestone > 90) {
+            // Red: 0-30 days or already passed
+            if (daysToMilestone <= 30) {
                 return {
                     status: 'red',
                     color: 'bg-red-500',
-                    label: 'Critical Gap',
+                    label: 'Critical Gap (0-30 days)',
                     borderColor: 'border-red-200'
                 };
-            } else if (CURRENT_DATE > milestoneDate) {
+            }
+            // Orange: 30-90 days
+            else if (daysToMilestone <= 90) {
                 return {
                     status: 'orange',
                     color: 'bg-amber-500',
-                    label: 'Planning Gap',
+                    label: 'Planning Gap (30-90 days)',
                     borderColor: 'border-amber-200'
                 };
-            } else {
+            }
+            // Green-ish (future, but incomplete data)
+            else {
                 return {
                     status: 'blue',
                     color: 'bg-blue-500',
-                    label: 'Upcoming',
+                    label: 'Future - Awaiting Info',
                     borderColor: 'border-blue-200'
                 };
             }
@@ -248,120 +495,333 @@
         }
 
         /**
+         * Parse CSV file with support for quoted fields and commas within fields
+         */
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            if (lines.length < 2) return [];
+
+            // Parse header row
+            const headers = parseCSVLine(lines[0]);
+            const data = [];
+
+            // Parse data rows
+            for (let i = 1; i < lines.length; i++) {
+                const values = parseCSVLine(lines[i]);
+                const row = {};
+                headers.forEach((header, index) => {
+                    row[header] = values[index] || '';
+                });
+                if (row.ProgramName && row.ProgramName.trim()) { // Only add non-empty rows
+                    data.push({
+                        id: nextId++,
+                        ...row
+                    });
+                }
+            }
+
+            return data;
+        }
+
+        /**
+         * Clean up imported data: sanitize all fields to remove quote artifacts
+         */
+        function cleanupImportedData(data) {
+            return data.map(row => {
+                const cleaned = {};
+                Object.keys(row).forEach(key => {
+                    cleaned[key] = sanitizeField(row[key]);
+                });
+                return cleaned;
+            });
+        }
+
+        /**
+         * Parse a single CSV line handling quoted fields and escaped quotes
+         */
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                const nextChar = line[i + 1];
+
+                if (char === '"') {
+                    if (inQuotes && nextChar === '"') {
+                        // Escaped quote
+                        current += '"';
+                        i++; // Skip next quote
+                    } else {
+                        // Toggle quote state
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    // End of field
+                    result.push(sanitizeField(current.trim()));
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+
+            // Push last field
+            result.push(sanitizeField(current.trim()));
+            return result;
+        }
+
+        /**
+         * Sanitize CSV field: remove trailing quotes, extra whitespace, clean malformed data
+         */
+        function sanitizeField(field) {
+            if (!field) return '';
+            // Remove leading/trailing quotes if not properly paired
+            let cleaned = field.replace(/^['"]|['"]$/g, '').trim();
+            // Remove trailing quote chars that may have been left over
+            cleaned = cleaned.replace(/["']+$/g, '');
+            return cleaned;
+        }
+
+        /**
+         * Export data to CSV
+         */
+        /**
+         * Escape CSV field values: wrap in quotes only if contains comma/newline/quote
+         */
+        function escapeCSVField(field) {
+            if (!field) return '';
+            const str = String(field).trim();
+            if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                return `"${str.replace(/"/g, '""')}"`;
+            }
+            return str;
+        }
+
+        function exportToCSV() {
+            const headers = ['ProgramName', 'EquipmentType', 'TaskName', 'Location', 'RunoffStart', 'RunoffEnd', 'ResourceName', 'MilestoneDate'];
+            const csvContent = [
+                headers.join(','),
+                ...runoffData.map(op => 
+                    headers.map(h => escapeCSVField(op[h] || '')).join(',')
+                )
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.setAttribute('href', URL.createObjectURL(blob));
+            link.setAttribute('download', `runoff-schedule-${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        /**
+         * Load sample data
+         */
+        function loadSampleData() {
+            runoffData = [
+                { id: 1, ProgramName: "Alpha-101", EquipmentType: "Manual", TaskName: "Op1010", Location: "Fanuc-USA", ResourceName: "", RunoffStart: "", RunoffEnd: "", MilestoneDate: "2025-10-01" },
+                { id: 2, ProgramName: "Beta-202", EquipmentType: "Semi-Auto", TaskName: "Op2020", Location: "ABB-Germany", ResourceName: "", RunoffStart: "", RunoffEnd: "", MilestoneDate: "2025-11-01" },
+                { id: 3, ProgramName: "Gamma-303", EquipmentType: "Auto", TaskName: "Op3030", Location: "Fanuc-China", ResourceName: "Devansh", RunoffStart: "2026-03-10", RunoffEnd: "2026-03-15", MilestoneDate: "2025-12-01" },
+                { id: 4, ProgramName: "Delta-404", EquipmentType: "Auto", TaskName: "Op4040", Location: "Ari-Germany", ResourceName: "Devansh", RunoffStart: "2026-04-01", RunoffEnd: "2026-04-05", MilestoneDate: "2026-01-01" },
+                { id: 5, ProgramName: "Delta-404", EquipmentType: "Manual", TaskName: "Op4041", Location: "Ari-Germany", ResourceName: "Devansh", RunoffStart: "2026-04-04", RunoffEnd: "2026-04-06", MilestoneDate: "2026-01-01" },
+                { id: 6, ProgramName: "Epsilon-505", EquipmentType: "Semi-Auto", TaskName: "Op5050", Location: "Fanuc-Japan", ResourceName: "Adrian", RunoffStart: "2026-05-20", RunoffEnd: "2026-05-25", MilestoneDate: "2026-02-01" }
+            ];
+            nextId = 7;
+            saveDataToStorage();
+            updateHeaderBadges();
+            renderScheduleTable();
+            renderResourceUtilization();
+        }
+
+        /**
          * Render the schedule as modern cards
          */
         function renderScheduleTable() {
-            const conflictIds = detectResourceConflicts(initialRunoffData);
+            // Build hierarchical grouping: ProgramName -> EquipmentType -> tasks
+            const conflictIds = detectResourceConflicts(runoffData);
             const grid = document.getElementById('scheduleGrid');
             grid.innerHTML = '';
 
+            // Get search filter value
+            const searchFilter = (document.getElementById('search-filter')?.value || '').toLowerCase();
+
             let statCounts = { green: 0, orange: 0, red: 0, conflict: 0 };
 
-            initialRunoffData.forEach(op => {
-                const statusInfo = getStatusInfo(op, conflictIds);
+            // Group by ProgramName then EquipmentType
+            const programs = {};
+            runoffData.forEach(row => {
+                const program = row.ProgramName || 'Unknown Program';
+                const type = row.EquipmentType || 'Unknown Type';
                 
-                // Count stats
-                if (statusInfo.status === 'green') statCounts.green++;
-                else if (statusInfo.status === 'orange') statCounts.orange++;
-                else if (statusInfo.status === 'red') statCounts.red++;
-                else if (statusInfo.status === 'conflict') statCounts.conflict++;
+                // Apply search filter
+                if (searchFilter && !program.toLowerCase().includes(searchFilter) && !row.TaskName?.toLowerCase().includes(searchFilter)) {
+                    return; // Skip this row if it doesn't match the filter
+                }
+                
+                if (!programs[program]) programs[program] = {};
+                if (!programs[program][type]) programs[program][type] = [];
+                programs[program][type].push(row);
+            });
 
-                const card = document.createElement('div');
-                const statusBg = {
-                    'green': 'border-green-200 bg-gradient-to-br from-green-50 to-white',
-                    'orange': 'border-amber-200 bg-gradient-to-br from-amber-50 to-white',
-                    'red': 'border-red-200 bg-gradient-to-br from-red-50 to-white',
-                    'conflict': 'border-yellow-200 bg-gradient-to-br from-yellow-50 to-white',
-                    'blue': 'border-blue-200 bg-gradient-to-br from-blue-50 to-white'
-                };
+            // Render each program as an accordion/card
+            Object.keys(programs).forEach(programName => {
+                const programContainer = document.createElement('div');
+                programContainer.className = 'glass-card p-3 sm:p-4 md:p-5';
 
-                const statusBgClass = statusBg[statusInfo.status] || statusBg['blue'];
-
-                card.className = `status-card border-2 rounded-xl p-6 ${statusBgClass}`;
-
-                const statusDot = {
-                    'green': 'bg-green-500',
-                    'orange': 'bg-amber-500',
-                    'red': 'bg-red-500',
-                    'conflict': 'bg-yellow-500',
-                    'blue': 'bg-blue-500'
-                };
-
-                card.innerHTML = `
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-3 h-3 rounded-full ${statusDot[statusInfo.status]}"></div>
-                            <span class="text-xs font-semibold text-gray-600 uppercase tracking-wide">${statusInfo.label}</span>
-                        </div>
-                        <span class="text-xs font-semibold text-gray-500">ID #${op.id}</span>
+                // Program header
+                const header = document.createElement('div');
+                header.className = 'flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3 sm:gap-2';
+                header.innerHTML = `
+                    <div class="min-w-0 flex-1">
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-900 truncate">${programName}</h3>
+                        <p class="text-xs sm:text-sm text-gray-600">${Object.keys(programs[programName]).length} equipment types</p>
                     </div>
-
-                    <h3 class="text-xl font-bold text-gray-900 mb-1">${op.program}</h3>
-                    <p class="text-sm text-gray-600 mb-4">${op.op_num} • ${op.type}</p>
-
-                    <div class="space-y-3 mb-4 pb-4 border-b border-gray-200">
-                        <div class="flex justify-between items-start">
-                            <span class="text-xs font-medium text-gray-600">VENDOR</span>
-                            <span class="text-sm font-semibold text-gray-900 text-right">${op.vendor}</span>
-                        </div>
-                        <div class="flex justify-between items-start">
-                            <span class="text-xs font-medium text-gray-600">LOCATION</span>
-                            <span class="text-sm font-semibold text-gray-900 text-right">${op.location}</span>
-                        </div>
-                        <div class="flex justify-between items-start">
-                            <span class="text-xs font-medium text-gray-600">MILESTONE</span>
-                            <span class="text-sm font-semibold text-gray-900 text-right">${formatDate(op.milestone_qtr_start)}</span>
-                        </div>
-                    </div>
-
-                    <div class="space-y-3 mb-4 pb-4 border-b border-gray-200">
-                        <div>
-                            <span class="text-xs font-medium text-gray-600">RUNOFF PERIOD</span>
-                            <p class="text-sm font-semibold text-gray-900 mt-1">
-                                ${op.runoff_start ? `${formatDate(op.runoff_start)} → ${formatDate(op.runoff_end)}` : '<span class="text-red-600">Not Scheduled</span>'}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-medium text-gray-600">ASSIGNED TO</span>
-                        <span class="px-3 py-1 rounded-full text-sm font-semibold ${op.resource ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}">
-                            ${op.resource || 'Unassigned'}
-                        </span>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <button class="text-xs sm:text-sm border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 px-2 sm:px-3 py-1 rounded-lg transition whitespace-nowrap flex-1 sm:flex-initial" onclick="openModal('${programName.replace(/'/g, "\\'")}')">+ Add</button>
                     </div>
                 `;
+                programContainer.appendChild(header);
 
-                grid.appendChild(card);
+                // Equipment type sections
+                Object.keys(programs[programName]).forEach(typeName => {
+                    const typeBox = document.createElement('div');
+                    typeBox.className = 'mb-3 sm:mb-4';
+
+                    const typeHeader = document.createElement('div');
+                    typeHeader.className = 'flex flex-col sm:flex-row items-start sm:items-center justify-between bg-white p-2 sm:p-3 rounded-lg border border-gray-200 gap-2 sm:gap-3';
+                    typeHeader.innerHTML = `
+                        <div class="min-w-0 flex-1">
+                            <p class="text-xs sm:text-sm font-semibold text-gray-800 truncate">${typeName}</p>
+                        </div>
+                        <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                            <div class="text-xs text-gray-500 whitespace-nowrap">${programs[programName][typeName].length} tasks</div>
+                            <button class="text-xs border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 px-2 py-1 rounded transition whitespace-nowrap" onclick="openModal('${programName.replace(/'/g, "\\'")}', '${typeName.replace(/'/g, "\\'")}')">+ Add</button>
+                        </div>
+                    `;
+                    typeBox.appendChild(typeHeader);
+
+                    // Task list
+                    const taskList = document.createElement('div');
+                    taskList.className = 'mt-3 grid gap-3';
+
+                    programs[programName][typeName].forEach(op => {
+                        const statusInfo = getStatusInfo(op, conflictIds);
+                        if (statusInfo.status === 'green') statCounts.green++;
+                        else if (statusInfo.status === 'orange') statCounts.orange++;
+                        else if (statusInfo.status === 'red') statCounts.red++;
+                        else if (statusInfo.status === 'conflict') statCounts.conflict++;
+
+                        const taskRow = document.createElement('div');
+                        taskRow.className = `flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3 p-3 rounded-lg border ${statusInfo.borderColor} bg-white`;
+
+                        const left = document.createElement('div');
+                        left.className = 'flex items-start gap-2 sm:gap-3 w-full sm:w-auto';
+                        left.innerHTML = `
+                            <div>
+                                <input type="checkbox" class="bulk-select-checkbox mr-2" data-opid="${op.id}" />
+                            </div>
+                            <div class="mt-1 sm:mt-0 w-3 h-3 rounded-full ${statusInfo.color}"></div>
+                            <div class="min-w-0">
+                                <div class="text-sm font-semibold text-gray-900 break-words">${op.TaskName}</div>
+                                <div class="text-xs text-gray-600 break-words">${op.Location || ''} • ${op.ResourceName || 'Unassigned'}</div>
+                            </div>
+                        `;
+
+                        const right = document.createElement('div');
+                        right.className = 'w-full sm:w-auto text-left sm:text-right text-xs sm:text-sm text-gray-700';
+                        right.innerHTML = `
+                            <div class="whitespace-normal sm:whitespace-nowrap">${op.RunoffStart ? formatDate(op.RunoffStart) : '-'} → ${op.RunoffEnd ? formatDate(op.RunoffEnd) : '-'}</div>
+                            <div class="text-xs text-gray-500">Milestone: ${op.MilestoneDate ? formatDate(op.MilestoneDate) : '-'}</div>
+                            <div class="mt-2 flex flex-wrap gap-2 justify-start sm:justify-end">
+                                <button onclick="editOperation(${op.id})" class="px-2 py-1 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 rounded text-xs">Edit</button>
+                                <button onclick="deleteOperation(${op.id})" class="px-2 py-1 border border-red-300 text-red-700 bg-white hover:bg-red-50 rounded text-xs">Delete</button>
+                            </div>
+                        `;
+
+                        taskRow.appendChild(left);
+                        taskRow.appendChild(right);
+
+                        // Conflict note
+                        if (conflictIds.has(op.id)) {
+                            const conflictNote = document.createElement('div');
+                            conflictNote.className = 'mt-2 text-xs text-yellow-700';
+                            // find conflicting task names
+                            const conflicts = runoffData.filter(other => other.id !== op.id && other.ResourceName === op.ResourceName && doDateRangesOverlap(op.RunoffStart, op.RunoffEnd, other.RunoffStart, other.RunoffEnd)).map(x => x.TaskName);
+                            conflictNote.textContent = `Conflicts with: ${conflicts.join(', ')}`;
+                            taskRow.appendChild(conflictNote);
+                        }
+
+                        taskList.appendChild(taskRow);
+                    });
+
+                    typeBox.appendChild(taskList);
+                    programContainer.appendChild(typeBox);
+                });
+
+                grid.appendChild(programContainer);
             });
 
             // Update stats
-            document.getElementById('stat-green').querySelector('p:nth-of-type(2)').textContent = statCounts.green;
-            document.getElementById('stat-orange').querySelector('p:nth-of-type(2)').textContent = statCounts.orange;
-            document.getElementById('stat-red').querySelector('p:nth-of-type(2)').textContent = statCounts.red;
-            document.getElementById('stat-conflict').querySelector('p:nth-of-type(2)').textContent = statCounts.conflict;
+            document.getElementById('stat-value-green').textContent = statCounts.green;
+            document.getElementById('stat-value-orange').textContent = statCounts.orange;
+            document.getElementById('stat-value-red').textContent = statCounts.red;
+            document.getElementById('stat-value-conflict').textContent = statCounts.conflict;
+
+            if (runoffData.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12 px-4">
+                        <div class="max-w-md mx-auto">
+                            <div class="text-5xl mb-4">📊</div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">No Operations Yet</h3>
+                            <p class="text-gray-600 mb-6">Get started by importing a CSV file or loading sample data to see your program schedule</p>
+                            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                                <button onclick="document.getElementById('btn-load-sample').click()" class="btn-primary px-4 py-2">Load Sample Data</button>
+                                <button onclick="document.getElementById('csvFileInput').click()" class="btn-primary px-4 py-2">Import CSV</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (Object.keys(programs).length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12 px-4">
+                        <div class="max-w-md mx-auto">
+                            <div class="text-4xl mb-4">🔍</div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">No Results Found</h3>
+                            <p class="text-gray-600 mb-4">No operations match your search criteria</p>
+                            <button onclick="document.getElementById('search-filter').value=''; document.getElementById('search-filter').dispatchEvent(new Event('input'))" class="btn-primary px-4 py-2">Clear Search</button>
+                        </div>
+                    </div>
+                `;
+            }
         }
 
         /**
          * Render resource utilization cards
          */
         function renderResourceUtilization() {
-            const conflictIds = detectResourceConflicts(initialRunoffData);
+            const conflictIds = detectResourceConflicts(runoffData);
             const resourceMap = {};
 
-            // Calculate total days and check for conflicts per resource
-            initialRunoffData.forEach(op => {
-                if (op.resource && op.runoff_start && op.runoff_end) {
-                    if (!resourceMap[op.resource]) {
-                        resourceMap[op.resource] = {
+            runoffData.forEach(op => {
+                if (op.ResourceName && op.RunoffStart && op.RunoffEnd) {
+                    if (!resourceMap[op.ResourceName]) {
+                        resourceMap[op.ResourceName] = {
                             totalDays: 0,
                             hasConflict: false,
-                            assignedOps: 0
+                            assignedOps: 0,
+                            conflictingOps: [],
+                            locations: new Set()
                         };
                     }
-                    resourceMap[op.resource].totalDays += calculateDaysBetween(op.runoff_start, op.runoff_end);
-                    resourceMap[op.resource].assignedOps += 1;
+                    resourceMap[op.ResourceName].totalDays += calculateDaysBetween(op.RunoffStart, op.RunoffEnd);
+                    resourceMap[op.ResourceName].assignedOps += 1;
+                    resourceMap[op.ResourceName].locations.add(op.Location);
                     if (conflictIds.has(op.id)) {
-                        resourceMap[op.resource].hasConflict = true;
+                        resourceMap[op.ResourceName].hasConflict = true;
+                        resourceMap[op.ResourceName].conflictingOps.push(`${op.TaskName} (${formatDate(op.RunoffStart)})`);
                     }
                 }
             });
@@ -370,31 +830,51 @@
             container.innerHTML = '';
 
             if (Object.keys(resourceMap).length === 0) {
-                container.innerHTML = '<p class="text-gray-500 text-center col-span-full py-8">No resources assigned</p>';
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 px-4">
+                        <div class="max-w-md mx-auto">
+                            <div class="text-4xl mb-4">👥</div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">No Resources Assigned</h3>
+                            <p class="text-gray-600 mb-4">Start assigning resources to your operations to track workload and identify conflicts</p>
+                        </div>
+                    </div>
+                `;
                 return;
             }
 
             Object.entries(resourceMap).forEach(([resource, data]) => {
                 const card = document.createElement('div');
-                card.className = `rounded-xl p-6 border-2 ${data.hasConflict ? 'bg-gradient-to-br from-red-50 to-white border-red-300' : 'bg-gradient-to-br from-slate-50 to-white border-slate-200'}`;
+                card.className = `glass-card p-4 sm:p-6 transition-all ${data.hasConflict ? 'border-red-300' : ''}`;
 
                 card.innerHTML = `
-                    <div class="flex items-start justify-between mb-4">
-                        <div>
-                            <p class="${data.hasConflict ? 'font-bold text-red-600' : 'font-semibold text-gray-900'} text-lg">${resource}</p>
-                            ${data.hasConflict ? '<p class="text-xs font-semibold text-red-600 mt-1">⚠️ SCHEDULING CONFLICT</p>' : ''}
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+                        <div class="min-w-0 flex-1">
+                            <p class="text-lg sm:text-xl font-semibold text-gray-900 break-words"><button onclick="openResourceModal('${resource.replace(/'/g, "\\'")}')" class="text-left hover:underline">${resource}</button></p>
+                            ${data.hasConflict ? '<span class="inline-block mt-1 px-2 py-0.5 rounded bg-red-100 text-red-800 text-xs font-semibold">Conflict</span>' : ''}
                         </div>
                     </div>
 
                     <div class="space-y-3">
-                        <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-gray-200">
-                            <span class="text-xs font-medium text-gray-600">Days Committed</span>
-                            <span class="text-2xl font-bold text-blue-600">${data.totalDays}</span>
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 bg-white rounded-lg border border-gray-200">
+                            <span class="text-xs sm:text-sm font-medium text-gray-600">Days Committed</span>
+                            <span class="text-xl sm:text-2xl font-bold text-gray-900">${data.totalDays}</span>
                         </div>
-                        <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-gray-200">
-                            <span class="text-xs font-medium text-gray-600">Assigned Operations</span>
-                            <span class="text-lg font-bold text-gray-900">${data.assignedOps}</span>
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 bg-white rounded-lg border border-gray-200">
+                            <span class="text-xs sm:text-sm font-medium text-gray-600">Operations</span>
+                            <span class="text-base sm:text-lg font-bold text-gray-900">${data.assignedOps}</span>
                         </div>
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 bg-white rounded-lg border border-gray-200">
+                            <span class="text-xs sm:text-sm font-medium text-gray-600">Locations</span>
+                            <span class="text-base sm:text-lg font-bold text-gray-900">${data.locations.size}</span>
+                        </div>
+                        ${data.hasConflict ? `
+                            <div class="p-3 bg-red-50 rounded-lg border border-red-200">
+                                <p class="text-xs font-semibold text-red-700 mb-2">Overlapping:</p>
+                                <ul class="text-xs text-red-700 space-y-1 break-words">
+                                    ${data.conflictingOps.map(op => `<li>• ${op}</li>`).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
                     </div>
                 `;
 
@@ -402,16 +882,648 @@
             });
         }
 
+        
+
         /**
-         * Initialize the application
+         * Setup event listeners
          */
-        function init() {
+        function setupEventListeners() {
+            const modal = document.getElementById('operationModal');
+            const btnAdd = document.getElementById('btn-add-operation');
+            const btnClose = document.getElementById('btn-close-modal');
+            const form = document.getElementById('operationForm');
+            const csvInput = document.getElementById('csvFileInput');
+            const btnImportCSV = document.getElementById('btn-import-csv');
+            const btnExportCSV = document.getElementById('btn-export-csv');
+            const btnLoadSample = document.getElementById('btn-load-sample');
+
+            btnAdd.addEventListener('click', () => openModal());
+            btnClose.addEventListener('click', () => closeModal());
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+            form.addEventListener('submit', (e) => handleFormSubmit(e));
+            
+            btnImportCSV.addEventListener('click', () => {
+                const file = csvInput.files[0];
+                if (!file) {
+                    showFeedback('Please select a CSV file', 'error');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        runoffData = parseCSV(e.target.result);
+                        runoffData = cleanupImportedData(runoffData);
+                        saveDataToStorage();
+                        updateHeaderBadges();
+                        renderScheduleTable();
+                        renderResourceUtilization();
+                        showFeedback(`✓ Successfully imported ${runoffData.length} operations`, 'success');
+                    } catch (err) {
+                        showFeedback('Error parsing CSV: ' + err.message, 'error');
+                    }
+                };
+                reader.readAsText(file);
+            });
+
+            btnExportCSV.addEventListener('click', () => {
+                if (runoffData.length === 0) {
+                    showFeedback('No data to export', 'error');
+                    return;
+                }
+                exportToCSV();
+                showFeedback('✓ CSV exported successfully', 'success');
+            });
+
+            btnLoadSample.addEventListener('click', () => {
+                loadSampleData();
+                showFeedback('✓ Sample data loaded', 'success');
+            });
+
+            const btnClearData = document.getElementById('btn-clear-data');
+            btnClearData.addEventListener('click', () => {
+                if (confirm('Are you sure you want to delete all data? Export first if needed.')) {
+                    runoffData = [];
+                    nextId = 1;
+                    localStorage.removeItem('runoffDashboardData');
+                    updateHeaderBadges();
+                    renderScheduleTable();
+                    renderResourceUtilization();
+                    showFeedback('✓ All data cleared', 'success');
+                }
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                // Ctrl+S - Save (with visual feedback)
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    saveDataToStorage();
+                    showSaveIndicator();
+                }
+                // Ctrl+E - Export
+                if (e.ctrlKey && e.key === 'e') {
+                    e.preventDefault();
+                    if (runoffData.length > 0) {
+                        exportToCSV();
+                    }
+                }
+                // Ctrl+N - New operation
+                if (e.ctrlKey && e.key === 'n') {
+                    e.preventDefault();
+                    openModal();
+                }
+                // Ctrl+F - Focus search
+                if (e.ctrlKey && e.key === 'f') {
+                    e.preventDefault();
+                    const searchInput = document.getElementById('search-filter');
+                    if (searchInput) {
+                        searchInput.focus();
+                        searchInput.select();
+                    }
+                }
+                // Escape - Close modals
+                if (e.key === 'Escape') {
+                    closeModal();
+                    closeResourceModal();
+                }
+            });
+
+            // Search filter listener
+            const searchInput = document.getElementById('search-filter');
+            if (searchInput) {
+                searchInput.addEventListener('input', () => {
+                    renderScheduleTable();
+                });
+            }
+
+            // Resource modal close wiring
+            const resourceModal = document.getElementById('resourceModal');
+            const resourceModalClose = document.getElementById('resourceModalClose');
+            if (resourceModalClose) resourceModalClose.addEventListener('click', () => closeResourceModal());
+            if (resourceModal) resourceModal.addEventListener('click', (e) => { if (e.target === resourceModal) closeResourceModal(); });
+
+            // Resource modal export/print wiring
+            const resourceExportBtn = document.getElementById('resourceExportBtn');
+            const resourcePrintBtn = document.getElementById('resourcePrintBtn');
+            if (resourceExportBtn) resourceExportBtn.addEventListener('click', () => {
+                if (!currentResourceInModal) { alert('No resource selected'); return; }
+                exportResourceCSV(currentResourceInModal);
+            });
+            if (resourcePrintBtn) resourcePrintBtn.addEventListener('click', () => {
+                if (!currentResourceInModal) { alert('No resource selected'); return; }
+                printResourceRoadmap(currentResourceInModal);
+            });
+
+            // Bulk reassign wiring - main view
+            const bulkApplyMain = document.getElementById('bulk-reassign-apply-main');
+            const bulkInputMain = document.getElementById('bulk-reassign-input-main');
+            const bulkSelectAllMain = document.getElementById('bulk-select-all-main');
+            const bulkClearMain = document.getElementById('bulk-select-clear-main');
+
+            if (bulkSelectAllMain) {
+                bulkSelectAllMain.addEventListener('change', (e) => {
+                    const checked = e.target.checked;
+                    document.querySelectorAll('.bulk-select-checkbox').forEach(cb => { cb.checked = checked; });
+                });
+            }
+            if (bulkClearMain) bulkClearMain.addEventListener('click', () => { document.querySelectorAll('.bulk-select-checkbox').forEach(cb => cb.checked = false); if (bulkSelectAllMain) bulkSelectAllMain.checked = false; });
+            if (bulkApplyMain) bulkApplyMain.addEventListener('click', () => {
+                const newName = bulkInputMain.value.trim();
+                const checked = Array.from(document.querySelectorAll('.bulk-select-checkbox:checked'));
+                if (!checked.length) { alert('No tasks selected'); return; }
+                if (!confirm(`Assign ${checked.length} selected task(s) to '${newName || "(unassigned)"}'?`)) return;
+                checked.forEach(cb => {
+                    const id = parseInt(cb.dataset.opid);
+                    const idx = runoffData.findIndex(o => o.id === id);
+                    if (idx !== -1) runoffData[idx].ResourceName = newName;
+                    cb.checked = false;
+                });
+                if (bulkSelectAllMain) bulkSelectAllMain.checked = false;
+                saveDataToStorage(); renderScheduleTable(); renderResourceUtilization();
+            });
+
+            // Bulk reassign wiring - resource modal
+            document.addEventListener('change', (e) => {
+                if (e.target && e.target.id === 'resource-modal-select-all') {
+                    const checked = e.target.checked;
+                    document.querySelectorAll('.resource-modal-checkbox').forEach(cb => cb.checked = checked);
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (e.target && e.target.id === 'bulk-reassign-apply-modal') {
+                    const newName = (document.getElementById('bulk-reassign-input-modal')?.value || '').trim();
+                    const checked = Array.from(document.querySelectorAll('.resource-modal-checkbox:checked'));
+                    if (!checked.length) { alert('No tasks selected'); return; }
+                    if (!confirm(`Assign ${checked.length} selected task(s) to '${newName || "(unassigned)"}'?`)) return;
+                    checked.forEach(cb => {
+                        const id = parseInt(cb.dataset.opid);
+                        const idx = runoffData.findIndex(o => o.id === id);
+                        if (idx !== -1) runoffData[idx].ResourceName = newName;
+                        cb.checked = false;
+                    });
+                    saveDataToStorage(); renderScheduleTable(); renderResourceUtilization();
+                    // reopen modal for current resource (if newName matches), else close
+                    if (newName && newName !== currentResourceInModal) {
+                        openResourceModal(newName);
+                    } else if (!newName) {
+                        closeResourceModal();
+                    } else {
+                        openResourceModal(currentResourceInModal);
+                    }
+                }
+                if (e.target && e.target.id === 'bulk-reassign-clear-modal') {
+                    document.querySelectorAll('.resource-modal-checkbox').forEach(cb => cb.checked = false);
+                    const selAll = document.getElementById('resource-modal-select-all'); if (selAll) selAll.checked = false;
+                }
+            });
+        }
+
+        /**
+         * Open modal
+         * - If called with a numeric id -> edit that operation
+         * - If called with (programName, equipmentType) -> prefill add modal
+         * - If called with no args -> open blank add modal
+         */
+        function openModal(opOrProgram = null, equipmentType = null) {
+            const modal = document.getElementById('operationModal');
+            const form = document.getElementById('operationForm');
+            const title = document.getElementById('modalTitle');
+
+            form.reset();
+            form.dataset.editId = '';
+
+            // Edit by numeric id
+            if (typeof opOrProgram === 'number') {
+                const op = runoffData.find(o => o.id === opOrProgram);
+                if (op) {
+                    title.textContent = 'Edit Program';
+                    document.getElementById('form-ProgramName').value = op.ProgramName;
+                    document.getElementById('form-TaskName').value = op.TaskName;
+                    document.getElementById('form-EquipmentType').value = op.EquipmentType;
+                    document.getElementById('form-Location').value = op.Location;
+                    document.getElementById('form-MilestoneDate').value = op.MilestoneDate;
+                    document.getElementById('form-RunoffStart').value = op.RunoffStart;
+                    document.getElementById('form-RunoffEnd').value = op.RunoffEnd;
+                    document.getElementById('form-ResourceName').value = op.ResourceName;
+                    form.dataset.editId = opOrProgram;
+                }
+            }
+            // Prefill add modal when program name (string) passed
+            else if (typeof opOrProgram === 'string' && opOrProgram) {
+                title.textContent = 'Add New Task';
+                document.getElementById('form-ProgramName').value = opOrProgram;
+                if (equipmentType) {
+                    document.getElementById('form-EquipmentType').value = equipmentType;
+                }
+            }
+            // Blank add
+            else {
+                title.textContent = 'Add New Program';
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        /**
+         * Close modal
+         */
+        function closeModal() {
+            document.getElementById('operationModal').classList.add('hidden');
+        }
+
+        /**
+         * Open resource roadmap modal for a given resource name
+         */
+        let currentResourceInModal = '';
+
+        function openResourceModal(resourceName) {
+            const modal = document.getElementById('resourceModal');
+            const title = document.getElementById('resourceModalTitle');
+            const body = document.getElementById('resourceModalBody');
+
+            // track current resource for export/print actions
+            currentResourceInModal = resourceName;
+            title.textContent = `Roadmap: ${resourceName}`;
+
+            // Gather operations for this resource
+            const ops = runoffData.filter(o => (o.ResourceName || '').toString() === resourceName);
+
+            if (ops.length === 0) {
+                body.innerHTML = `<p class="text-sm text-gray-600">No assignments found for ${resourceName}.</p>`;
+                modal.classList.remove('hidden');
+                return;
+            }
+
+            // Sort by RunoffStart (fallback to MilestoneDate)
+            ops.sort((a, b) => {
+                const aDate = a.RunoffStart || a.MilestoneDate || '';
+                const bDate = b.RunoffStart || b.MilestoneDate || '';
+                return new Date(aDate) - new Date(bDate);
+            });
+
+            // Detect conflicts for this resource
+            const conflictIds = detectResourceConflicts(runoffData);
+
+            // Build roadmap HTML
+            let totalDays = 0;
+            // Calculate timeline range
+            const allDates = ops.flatMap(o => [o.RunoffStart, o.RunoffEnd, o.MilestoneDate].filter(Boolean));
+            const parsedDates = allDates.map(d => new Date(d));
+            const minDate = parsedDates.length ? new Date(Math.min(...parsedDates)) : null;
+            const maxDate = parsedDates.length ? new Date(Math.max(...parsedDates)) : null;
+
+            // Build comprehensive Gantt timeline with progress indicators
+            let timelineHTML = '';
+            if (minDate && maxDate && minDate < maxDate) {
+                const rangeMs = maxDate - minDate || 1;
+                const midDate = new Date(Math.round((minDate.getTime() + maxDate.getTime()) / 2));
+                
+                // Build Gantt rows (one per op) with progress bars
+                const ganttRows = ops.map((op, idx) => {
+                    const start = op.RunoffStart ? new Date(op.RunoffStart) : (op.MilestoneDate ? new Date(op.MilestoneDate) : null);
+                    const end = op.RunoffEnd ? new Date(op.RunoffEnd) : (op.MilestoneDate ? new Date(op.MilestoneDate) : null);
+                    if (!start || !end) return '';
+                    
+                    const left = Math.max(0, ((start - minDate) / rangeMs) * 100);
+                    const width = Math.max(1, ((end - start) / rangeMs) * 100);
+                    const status = getStatusInfo(op, conflictIds).status;
+                    const color = status === 'green' ? '#10B981' : status === 'orange' ? '#D97706' : status === 'red' ? '#EF4444' : (status === 'conflict' ? '#F59E0B' : '#60A5FA');
+                    const hasConflict = conflictIds.has(op.id);
+                    const conflictClass = hasConflict ? 'ring-2 ring-offset-1 ring-red-400' : '';
+                    
+                    // Progress: days completed vs total days
+                    const totalDays = calculateDaysBetween(op.RunoffStart, op.RunoffEnd);
+                    const daysToStart = Math.max(0, Math.floor((start - CURRENT_DATE) / (1000 * 60 * 60 * 24)));
+                    const progressPct = daysToStart > 0 ? 0 : Math.min(100, Math.abs(Math.floor((CURRENT_DATE - start) / (1000 * 60 * 60 * 24)) / totalDays * 100));
+                    
+                    return `
+                        <div class="mb-3 p-3 bg-white rounded-lg border ${hasConflict ? 'border-red-300' : 'border-gray-200'}">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="text-xs font-semibold text-gray-800 truncate">${op.TaskName} • ${op.ProgramName}</div>
+                                <div class="text-xs text-gray-500">${formatDate(start.toISOString())} → ${formatDate(end.toISOString())}</div>
+                            </div>
+                            <div class="relative h-8 bg-gray-100 rounded overflow-hidden">
+                                <div class="absolute inset-0">
+                                    <div class="h-full w-full bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px)] bg-[length:40px_100%]"></div>
+                                </div>
+                                <div style="position:absolute; left:${left}%; width:${width}%; height:100%; background:${color}; display:flex; align-items:center; justify-content:center; color:white; font-weight:600; font-size:11px; opacity:0.95;">${op.TaskName}</div>
+                                ${progressPct > 0 ? `<div style=\"position:absolute; left:${left}%; width:${(progressPct/100) * width}%; height:100%; background:${color}; opacity:0.35; border-right:2px solid ${color};\"></div>` : ''}
+                                <div class="absolute top-0 bottom-0" style="left:${Math.max(0, Math.min(100, ((CURRENT_DATE - minDate) / rangeMs) * 100))}%">
+                                    <div class="h-full w-[2px] bg-blue-500"></div>
+                                </div>
+                            </div>
+                            ${hasConflict ? `<div class="mt-1 text-xs text-red-600 font-semibold">Resource conflict detected</div>` : ''}
+                        </div>
+                    `;
+                }).join('');
+                
+                timelineHTML = `
+                    <div class="mb-6 p-4 bg-white rounded-lg border border-gray-200">
+                        <div class="flex items-center justify-between mb-3">
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900">Engineer Timeline</h3>
+                                <p class="text-xs text-gray-600">${formatDate(minDate.toISOString())} → ${formatDate(maxDate.toISOString())} (${Math.round(rangeMs / (1000 * 60 * 60 * 24))} days)</p>
+                            </div>
+                            <div class="text-xs text-gray-600 flex items-center gap-3">
+                                <span class="inline-flex items-center gap-1"><span style="width:10px;height:10px;background:#10B981;display:inline-block;border-radius:3px"></span>On Track</span>
+                                <span class="inline-flex items-center gap-1"><span style="width:10px;height:10px;background:#D97706;display:inline-block;border-radius:3px"></span>Planning Gap</span>
+                                <span class="inline-flex items-center gap-1"><span style="width:10px;height:10px;background:#EF4444;display:inline-block;border-radius:3px"></span>Critical</span>
+                                <span class="inline-flex items-center gap-1"><span style="width:10px;height:10px;background:#F59E0B;display:inline-block;border-radius:3px"></span>Conflict</span>
+                                <span class="inline-flex items-center gap-1"><span style="width:10px;height:10px;background:#3b82f6;display:inline-block;border-radius:3px"></span>Today</span>
+                            </div>
+                        </div>
+                        <div class="space-y-2">${ganttRows}</div>
+                    </div>
+                `;
+            }
+
+            const rows = ops.map(op => {
+                const days = (op.RunoffStart && op.RunoffEnd) ? calculateDaysBetween(op.RunoffStart, op.RunoffEnd) : 0;
+                totalDays += days;
+                const hasConflict = conflictIds.has(op.id);
+                
+                // Calculate progress
+                const startDate = new Date(op.RunoffStart);
+                const endDate = new Date(op.RunoffEnd);
+                const daysToStart = Math.max(0, Math.floor((startDate - CURRENT_DATE) / (1000 * 60 * 60 * 24)));
+                const daysToEnd = Math.floor((endDate - CURRENT_DATE) / (1000 * 60 * 60 * 24));
+                const progressPct = daysToStart > 0 ? 0 : Math.min(100, Math.max(0, (days - daysToEnd) / days * 100));
+                
+                // Status color
+                const statusInfo = getStatusInfo(op, conflictIds);
+                const statusColor = statusInfo.status === 'green' ? '#10B981' : statusInfo.status === 'orange' ? '#D97706' : statusInfo.status === 'red' ? '#EF4444' : '#F59E0B';
+                
+                return `
+                    <div class="p-4 bg-white rounded-lg border ${hasConflict ? 'border-red-300 bg-red-50/30' : 'border-gray-200'} mb-3">
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <div class="flex items-start gap-3 min-w-0 flex-1">
+                                <input type="checkbox" class="resource-modal-checkbox mt-1" data-opid="${op.id}" />
+                                <div class="min-w-0 flex-1">
+                                    <div class="text-sm font-bold text-gray-900 truncate">${op.TaskName}</div>
+                                    <div class="text-xs text-gray-600 truncate">${op.ProgramName} • ${op.EquipmentType} • ${op.Location}</div>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="inline-block px-2 py-0.5 rounded text-xs font-semibold" style="background:${statusColor}15; color:${statusColor};">${statusInfo.label}</span>
+                                        ${hasConflict ? `<span class="inline-block px-2 py-0.5 rounded bg-red-100 text-red-700 text-xs font-semibold">Conflict</span>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                <div class="text-2xl font-bold" style="color:${statusColor};">${days}d</div>
+                                <div class="text-xs text-gray-500 whitespace-nowrap">${formatDate(op.RunoffStart)}</div>
+                                <div class="text-xs text-gray-500 whitespace-nowrap">→ ${formatDate(op.RunoffEnd)}</div>
+                                <div class="text-xs text-gray-500 mt-1 whitespace-nowrap">MS: ${formatDate(op.MilestoneDate)}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Progress Bar -->
+                        <div class="mb-3">
+                            <div class="flex justify-between text-xs text-gray-600 mb-1">
+                                <span>Progress</span>
+                                <span class="font-semibold">${Math.round(progressPct)}%</span>
+                            </div>
+                            <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div style="width:${progressPct}%; height:100%; background:${statusColor}; transition:width 0.3s ease;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex gap-2">
+                            <button onclick="editOperation(${op.id})" class="px-3 py-1.5 text-xs border border-gray-300 bg-white text-gray-700 rounded hover:bg-gray-50 font-semibold">Edit</button>
+                            <button onclick="document.getElementById('reassign-${op.id}').classList.toggle('hidden')" class="px-3 py-1.5 text-xs border border-gray-300 bg-white text-gray-700 rounded hover:bg-gray-50 font-semibold">Reassign</button>
+                        </div>
+                    </div>
+                    <div id="reassign-${op.id}" class="hidden mb-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                        <div class="flex gap-2 items-center">
+                            <input id="reassign-input-${op.id}" type="text" class="px-3 py-2 border rounded flex-1" placeholder="New resource name" value="${op.ResourceName || ''}">
+                            <button onclick="reassignOperation(${op.id})" class="px-3 py-2 bg-blue-600 text-white rounded font-semibold hover:bg-blue-700">Save</button>
+                            <button onclick="document.getElementById('reassign-${op.id}').classList.add('hidden')" class="px-3 py-2 bg-gray-300 text-gray-800 rounded font-semibold hover:bg-gray-400">Cancel</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const conflictList = ops.filter(o => conflictIds.has(o.id)).map(o => `${o.TaskName} (${o.RunoffStart || o.MilestoneDate})`);
+
+            body.innerHTML = `
+                ${timelineHTML}
+                <div class="sticky top-0 z-10 bg-white border-t border-b border-gray-200 py-3 mb-4 -mx-4 px-4">
+                    <div class="flex items-center justify-between gap-3 flex-wrap">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <label class="text-sm text-gray-600 flex items-center"><input id="resource-modal-select-all" type="checkbox" class="mr-2"/> Select all</label>
+                            <input id="bulk-reassign-input-modal" type="text" placeholder="New resource name" class="px-3 py-2 border border-gray-300 rounded text-sm" />
+                            <button id="bulk-reassign-apply-modal" class="px-3 py-2 bg-blue-600 text-white rounded text-sm font-semibold hover:bg-blue-700">Assign Selected</button>
+                            <button id="bulk-reassign-clear-modal" class="px-3 py-2 bg-gray-100 text-gray-700 rounded text-sm font-semibold hover:bg-gray-200">Clear</button>
+                        </div>
+                        <div class="text-sm font-medium text-gray-600">${ops.length} operations • ${conflictList.length} conflicts</div>
+                    </div>
+                </div>
+                <div class="space-y-3">${rows}</div>
+                ${conflictList.length ? `<div class="mt-4 p-3 bg-red-50 rounded-lg border border-red-200"><div class="text-sm font-semibold text-red-700 mb-2">Conflicting Operations</div><ul class="text-xs text-red-600">${conflictList.map(c => `<li>• ${c}</li>`).join('')}</ul></div>` : ''}
+            `;
+
+            modal.classList.remove('hidden');
+        }
+
+        /**
+         * Close resource modal
+         */
+        function closeResourceModal() {
+            document.getElementById('resourceModal').classList.add('hidden');
+        }
+
+        /**
+         * Reassign operation to a different resource (called from resource modal)
+         */
+        function reassignOperation(opId) {
+            const input = document.getElementById(`reassign-input-${opId}`);
+            if (!input) return;
+            const newName = input.value.trim();
+            const opIndex = runoffData.findIndex(o => o.id === opId);
+            if (opIndex === -1) return;
+            runoffData[opIndex].ResourceName = newName;
+            saveDataToStorage();
+            // refresh main views
+            renderScheduleTable();
+            renderResourceUtilization();
+            // If the modal is open, re-open for the new resource to reflect change
+            if (document.getElementById('resourceModal') && !document.getElementById('resourceModal').classList.contains('hidden')) {
+                // if newName is empty, just close modal
+                if (!newName) {
+                    closeResourceModal();
+                } else {
+                    openResourceModal(newName);
+                }
+            }
+        }
+
+        /**
+         * Export roadmap for the current resource as CSV
+         */
+        function exportResourceCSV(resourceName) {
+            const headers = ['ProgramName', 'EquipmentType', 'TaskName', 'Location', 'RunoffStart', 'RunoffEnd', 'ResourceName', 'MilestoneDate'];
+            const ops = runoffData.filter(o => (o.ResourceName || '').toString() === resourceName);
+            if (!ops.length) {
+                alert('No operations for ' + resourceName);
+                return;
+            }
+            const csvContent = [headers.join(','), ...ops.map(op => headers.map(h => escapeCSVField(op[h] || '')).join(','))].join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.setAttribute('href', URL.createObjectURL(blob));
+            const safeName = resourceName.replace(/[^a-z0-9-_]/gi, '_');
+            link.setAttribute('download', `resource-roadmap-${safeName}-${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        /**
+         * Print the current resource roadmap (opens a print-friendly window)
+         */
+        function printResourceRoadmap(resourceName) {
+            const modalBody = document.getElementById('resourceModalBody');
+            if (!modalBody) return;
+            const printWindow = window.open('', '_blank');
+            const title = `Roadmap: ${resourceName}`;
+            const html = `<!doctype html><html><head><meta charset="utf-8"><title>${title}</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600,700&display=swap" rel="stylesheet"><style>body{font-family:Inter,sans-serif;padding:20px;color:#0f172a} .op{margin-bottom:12px;padding:10px;border:1px solid #e6e6e6;border-radius:8px}</style></head><body><h1>${title}</h1>${modalBody.innerHTML}</body></html>`;
+            printWindow.document.open();
+            printWindow.document.write(html);
+            printWindow.document.close();
+            // Give the content a moment to render then print
+            setTimeout(() => { printWindow.focus(); printWindow.print(); }, 300);
+        }
+
+        /**
+         * Handle form submission
+         */
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const editId = document.getElementById('operationForm').dataset.editId;
+            
+            const opData = {
+                ProgramName: document.getElementById('form-ProgramName').value,
+                TaskName: document.getElementById('form-TaskName').value,
+                EquipmentType: document.getElementById('form-EquipmentType').value,
+                Location: document.getElementById('form-Location').value,
+                MilestoneDate: document.getElementById('form-MilestoneDate').value,
+                RunoffStart: document.getElementById('form-RunoffStart').value,
+                RunoffEnd: document.getElementById('form-RunoffEnd').value,
+                ResourceName: document.getElementById('form-ResourceName').value
+            };
+
+            if (editId) {
+                const index = runoffData.findIndex(o => o.id === parseInt(editId));
+                if (index !== -1) {
+                    runoffData[index] = { ...runoffData[index], ...opData };
+                }
+            } else {
+                runoffData.push({
+                    id: nextId++,
+                    ...opData
+                });
+            }
+
+            saveDataToStorage();
+            closeModal();
             renderScheduleTable();
             renderResourceUtilization();
         }
 
+        /**
+         * Delete operation
+         */
+        function deleteOperation(opId) {
+            if (confirm('Are you sure you want to delete this program?')) {
+                runoffData = runoffData.filter(op => op.id !== opId);
+                saveDataToStorage();
+                renderScheduleTable();
+                renderResourceUtilization();
+            }
+        }
+
+        /**
+         * Edit operation
+         */
+        function editOperation(opId) {
+            openModal(opId);
+        }
+
+        /**
+         * Initialize the application
+         */
+        function init() {
+            // Load data from storage on app start, or keep empty if nothing saved
+            loadDataFromStorage();
+            updateHeaderBadges();
+            renderScheduleTable();
+            renderResourceUtilization();
+            setupEventListeners();
+        }
+
         // Run on page load
         document.addEventListener('DOMContentLoaded', init);
+
+        /**
+         * Test runner: performs a sanity test of bulk reassign flows.
+         * Auto-runs when URL contains ?runTests=1
+         */
+        function runBulkReassignTest() {
+            console.log('Running bulk reassign test...');
+            // Step 1: Load sample data
+            loadSampleData();
+
+            setTimeout(() => {
+                // Step 2: Select first two checkboxes in main view
+                const cbs = Array.from(document.querySelectorAll('.bulk-select-checkbox'));
+                if (cbs.length < 2) {
+                    alert('Test failed: not enough tasks to select.');
+                    return;
+                }
+                cbs[0].checked = true; cbs[1].checked = true;
+                document.getElementById('bulk-reassign-input-main').value = 'TestUser';
+                document.getElementById('bulk-reassign-apply-main').click();
+
+                setTimeout(() => {
+                    // Step 3: Verify TestUser assignments
+                    const assigned = runoffData.filter(o => o.ResourceName === 'TestUser');
+                    console.log('Assigned to TestUser:', assigned);
+                    if (assigned.length < 2) {
+                        alert('Test failed: main bulk assign did not assign expected tasks.');
+                        return;
+                    }
+
+                    // Step 4: Open resource modal for TestUser
+                    openResourceModal('TestUser');
+
+                    setTimeout(() => {
+                        // Select all in modal and reassign to AnotherUser
+                        const modalSel = document.getElementById('resource-modal-select-all');
+                        if (modalSel) modalSel.checked = true;
+                        document.getElementById('bulk-reassign-input-modal').value = 'AnotherUser';
+                        document.getElementById('bulk-reassign-apply-modal').click();
+
+                        setTimeout(() => {
+                            const finalAssigned = runoffData.filter(o => o.ResourceName === 'AnotherUser');
+                            console.log('Assigned to AnotherUser:', finalAssigned);
+                            if (finalAssigned.length >= 2) {
+                                alert('Bulk reassign test passed: tasks moved to AnotherUser.');
+                            } else {
+                                alert('Bulk reassign test failed during modal reassign.');
+                            }
+                        }, 300);
+                    }, 300);
+                }, 300);
+            }, 300);
+        }
+
+        // Auto-run tests if requested via query string
+        if (window.location.search && window.location.search.includes('runTests=1')) {
+            document.addEventListener('DOMContentLoaded', () => setTimeout(runBulkReassignTest, 600));
+        }
     </script>
 </body>
 </html>
